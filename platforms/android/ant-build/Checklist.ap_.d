@@ -39,6 +39,9 @@
 /Users/garytse/workspace/cl/platforms/android/assets/www/js/jstorage.js \
 /Users/garytse/workspace/cl/platforms/android/assets/www/js/SocialSharing.js \
 /Users/garytse/workspace/cl/platforms/android/assets/www/plugins/com.borismus.webintent \
+/Users/garytse/workspace/cl/platforms/android/assets/www/plugins/nl.x-services.plugins.socialsharing \
 /Users/garytse/workspace/cl/platforms/android/assets/www/plugins/com.borismus.webintent/www \
 /Users/garytse/workspace/cl/platforms/android/assets/www/plugins/com.borismus.webintent/www/webintent.js \
+/Users/garytse/workspace/cl/platforms/android/assets/www/plugins/nl.x-services.plugins.socialsharing/www \
+/Users/garytse/workspace/cl/platforms/android/assets/www/plugins/nl.x-services.plugins.socialsharing/www/SocialSharing.js \
 /Users/garytse/workspace/cl/platforms/android/ant-build/AndroidManifest.xml \
