@@ -1,0 +1,59 @@
+.ui-listview {
+    margin-left: 20px !important;
+    margin-right:0px !important;
+}
+
+.checklist-label {
+	font-size:20px;
+}
+
+.noStyle {
+	list-style: none !important;
+}
+
+.list {
+	list-style: none !important;
+	display: inline-block;
+}
+
+input[type=checkbox].css-checkbox {
+	display: none;
+	left:0px;
+}
+
+.rename {
+	font-style: bold !important;
+	color: grey !important;
+}
+
+input[type=checkbox].css-checkbox + label.css-label {
+	left:0px;
+	padding-left:31px;
+	height:26px; 
+	display:inline-block;
+	line-height:26px;
+	background-repeat:no-repeat;
+	background-position: 0 0;
+	font-size:20px;
+	vertical-align:middle;
+	cursor:pointer;
+
+}
+
+input[type=checkbox].css-checkbox:checked + label.css-label {
+	background-position: 0 -26px;
+	text-decoration: line-through;
+    color: grey !important;
+    font-weight: normal !important;
+    font-style: italic !important;
+}
+
+label.css-label {
+	background-image:url(checkbox.png);
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    </head>
+    <body>
+    <div data-role="page" id="home">
+        <header data-role="header" data-position="fixed" data-tap-toggle="false">
+            <div data-role="header">
+                <a href="#" id="templatesLink" data-inline="true" data-icon="grid" data-iconpos="notext" data-transition="slide"></a>
+                <h1 id ="homeTitle">New Checklist (unsaved)</h1>                
+                <a href="#" id="editDialogLaunch" data-rel="popup" data-transition="pop" data-position-to="window">Edit</a>
+            </div>
+        </header>       
+        <div data-role="content"> 
+
+            <ul id="checklist" class = "list" data-role="none" data-inset="true">
+            </ul>
+
+            <div data-role="popup" id="saveDialog" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
+            <div data-role="header" data-theme="a" class="ui-corner-top">
+                <h1>Save</h1>
+            </div>
+            <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                <h3 class="ui-title">What name do you want to save this list as?</h3>
+                <p>Only letters and numbers allowed.</p>
+                <input type="text" id="saveField" />
+                <a href="#" id="save" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Save</a>
+                <a href="#" class="cancelBtn" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>            
+                </div>
+            </div>
+
+            <div data-role="popup" id="noSavingDialog">
+                <p>Empty list cannot be saved.<p>
+            </div>
+
+            <div data-role="popup" id="clearDialog" data-overlay-theme="a" data-theme="a" data-dismissible="false" data-transition="pop" class="ui-corner-all">
+            <div data-role="header" data-theme="a" class="ui-corner-top">
+                <h1>Clear</h1>
+            </div>
+            <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                <h3 class="ui-title">Are you sure you want to clear this list? Templates will not be deleted.</h3>
+                <a href="#" id="clear" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Clear</a>
+                <a href="#" class="cancelBtn" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>            
+                </div>
+            </div>
+        </div>
+
+        <footer data-role="footer" data-position="fixed" data-tap-toggle="false">
+            <div id="inputGrid" class="ui-grid-a" >
+                <div class="ui-block-a main"><input type="text" name="name" id="inputField" placeholder="Enter list item" /></div>
+                <div class="ui-block-b main"><input type="button" value="Add" id="inputButton" data-inline="false" data-icon="plus"/></div>
+            </div>
+            <div id="renameGrid" class="ui-grid-a" >
+                <div class="ui-block-a main"><input type="text" name="name" id="renameField" placeholder="Enter list item" /></div>
+                <div class="ui-block-b main"><input type="button" value="Rename" id="renameButton" data-inline="true" data-icon="plus"/></div>
+                <div class="ui-block-b main"><input type="button" value="Cancel" id="cancelRenameButton" data-inline="true"/></div>
+            </div>
+            <nav data-role="navbar">
+                <ul>
+                    <li id="newItem"><a href="#" data-icon="plus">New Item</a></li>
+                    <li id="newLabel"><a href="#" data-icon="plus">New Label</a></li>
+                    <li id="clearDialogLaunch"><a href="#" data-icon="delete" data-rel="popup" data-position-to="window" data-transition="pop">Clear List</a></li>
+                    <li id="saveDialogLaunch"><a href="#" data-icon="check" data-rel="popup" data-position-to="window" data-transition="pop">Save List</a></li>
+                    <!-- for testing purposes
+                    <li id="testStore"><a href="#" data-icon="grid">Store</a></li>
+                    <li id="testRetrieve"><a href="#" data-icon="grid">Get</a></li>
+                    -->             
+                </ul>
+            </nav>
+        </footer>   
+    </div> <!-- one page -->
+    
+    <div data-role="page" id="templates">
+        <header data-role="header" data-position="fixed" data-tap-toggle="false">
+            <div data-role="header">
+                <a href="#" id="homeLink" data-icon="home" data-iconpos="notext" data-transition="slide">Home</a>
+                <h1>Templates</h1>               
+            </div>
+        </header>   
+        <div data-role="content"> 
+            <div data-role="fieldcontain">
+                <fieldset data-role="controlgroup" id="templateGroup">
+                    
+                    <ul data-role="listview" id="listOfChecklists" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+                    </ul>
+
+                    <div data-role="popup" id="confirmDelete" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
+                        <div data-role="header" data-theme="a" class="ui-corner-top">
+                            <h1>Delete unsaved checklist?</h1>
+                        </div>
+                        <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                            <h3 class="ui-title">Untitled checklist needs to be saved</h3>
+                            <a href="#" id="confirmLoadTemplate" data-role="button" data-inline="true" data-theme="b">Confirm</a>
+                            <a href="#" class="cancelBtn" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>     
+                        </div>
+                    </div>
+
+                    <div data-role="popup" id="confirmDeleteTemplate" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
+                        <div data-role="header" data-theme="a" class="ui-corner-top">
+                            <h1>Delete this template?</h1>
+                        </div>
+                        <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                            <a href="#" id="confirmDeleteTemplateBtn" data-role="button" data-inline="true" data-theme="b">Confirm</a>
+                            <a href="#" class="cancelBtn" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>     
+                        </div>
+                    </div>
+
+                    <div data-role="popup" id="loadDialog" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>Load</h1>
+                    </div>
+                    <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                        <h3 class="ui-title">Paste the URL of a shared checklist</h3>
+                        <input type="text" id="loadField" />
+                        <a href="#" id="load" data-role="button" data-inline="true" data-theme="b">Load</a>
+                        <a href="#" class="cancelBtn" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>            
+                        </div>
+                    </div>
+
+                    <div data-role="popup" id="shareTemplateDialog" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
+                        <div data-role="header" data-theme="a" class="ui-corner-top">
+                            <h1>Choose a template to share</h1>
+                        </div>
+                        <div data-role="content" id="shareTemplateDialogList" data-theme="d" class="ui-corner-bottom ui-content">
+                            <h3 class="ui-title">Choose a template to share</h3>
+                            <ul data-role="listview" data-inset="true" id="listOfTemplates">
+                            <!-- append list of templates here in code -->
+                            </ul>
+                            <a href="#" class="cancelBtn" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>            
+                        </div>
+                    </div>
+
+                    <div data-role="popup" id="errorPopup" data-transition="pop">
+                        <p>Template was not valid</p>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <footer data-role="footer" data-position="fixed" data-tap-toggle="false">
+            <nav data-role="navbar">
+                <ul>
+                    <li id="loadDialogLaunch"><a href="#" data-rel="popup" data-transition="pop" data-icon="plus" data-position-to="window">Load Template</a></li>
+                    <li id="shareDialogLaunch"><a href="#" data-icon="plus">Share A Template</a></li>
+                </ul>
+            </nav>
+        </footer>
+    </div> <!-- one page -->
+    
+    </div>
+        <link rel="stylesheet" href="jquery/jquery.mobile-1.4.0.css" />
+        <link rel="stylesheet" href="css/custom.css" />
+        
+        <script type="text/javascript" src="cordova.js"></script> 
+             
+        <script src="jquery/jquery-1.9.1.min.js"></script>  
+        <script src="jquery/jquery.mobile-1.4.0.min.js"></script>        
+        <script src="jquery/jquery-ui.min.js"></script>
+        <script src="jquery/jquery.ui.touch-punch.min.js"></script>
+        <script src="jquery/jquery.mjs.nestedSortable.js"></script>      
+        <script src="js/json2.js"></script>
+        <script src="js/jstorage.js"></script>  
+         
+        <script type="text/javascript" src="js/index.js"></script>       
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+        <script type="text/javascript" src="js/app.js"></script> 
+        <script type="text/javascript" src="js/SocialSharing.js"></script>
+         <!--script type="text/javascript" src="js/fileIO.js"></script>
+    </body>
+</html>
