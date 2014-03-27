@@ -608,7 +608,7 @@ function loadChecklist(nameOfTemplate, template, transitionToHome, refresh) {
 	if( nameOfTemplate ) currentChecklist = nameOfTemplate;
 	else currentChecklist = 'untitled';
 
-	//try {
+	try {
 		for ( i=0; i<template.length; i++) {
 			for (var insideKey in template[i]) { // each insideKey = 'checkbox-label' or 'label-text'
 		  		if( insideKey.match("label-text") != null ) {
@@ -633,9 +633,9 @@ function loadChecklist(nameOfTemplate, template, transitionToHome, refresh) {
 			$.mobile.changePage('#home', {transition: 'slide', reverse: false});
 		}		
 
-	// } catch (err) {
-	// 	console.log("Template was not valid, " + err);
-	// }	
+	 } catch (err) {
+	 	console.log("Template was not valid, " + err);
+	 }	
 }
 
 function resave(){
@@ -822,6 +822,7 @@ function removeButtonHighlights() {
 }
 
 $(document).ready(function() {	
+	console.log('document ready in app.js');
 
 	allowSortable();
 
@@ -1100,4 +1101,8 @@ $(document).ready(function() {
 	renderTemplates();
 
 	$('#editDialogLaunch').hide();
+
+	// initialize PhoneGap/Cordova code
+
+	app.initialize();
 });
