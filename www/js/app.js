@@ -692,21 +692,23 @@ function allowCollapsableSections() {
 		console.log("collapse section button pressed");
 
 		// identify current section first by getting selector for <div> of the related label
-		var currentLabel = $(this).parent();
+		currentLabel = $(this).parent().parent().html();
 
+		var endOfSectionFound = false;
 		for( i=0; i<listItems.length; i++ ) {
-			if( listItems[i].selector.html() == currentLabel.html() ) {
+			if( listItems[i].selector.parent().html() == currentLabel ) {
 				for( j=i+1; j<listItems.length; j++ ) {
-					if( listItems[j].checkbox == true ) {
+					if( listItems[j].checkbox == true && endOfSectionFound == false ) {
 						listItems[j].selector.toggle('slow');
+						console.log("collapse this checkbox = " + j);
 						// if this item has sublist items, hide/show those too
 						if( listItems[j].sublist ) {
 							for( k=0; k<listItems[j].sublist.length; k++ ) {
 								listItems[j].sublist[k].selector.toggle('slow');
 							}
 						}
-					} else {
-						break;
+					} else if( listItems[j].checkbox == false ) {
+						endOfSectionFound = true;
 					}
 				}
 			}
