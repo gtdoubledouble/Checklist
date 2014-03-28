@@ -318,9 +318,11 @@ function checkForCollapsableSection() {
 				if( listItems[j].checkbox == true && nextLabelFound == false ) {
 					console.log("Check if this item is checked: " + listItems[j].label + " = " + listItems[j].checked); // check if each checkbox is checked
 					allItemsChecked = allItemsChecked & listItems[j].checked;
-					//if(allItemsChecked == false) break;
 					currentSectionCounter++;
 				} else {
+					if( listItems[j].checkbox == false  && listItems[j-1].checkbox == false ) {
+						allItemsChecked = false;
+					}
 					nextLabelFound = true;
 				}
 			}
