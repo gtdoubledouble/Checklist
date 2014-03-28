@@ -432,7 +432,7 @@ function clearCurrentList() {
 
 	$('#checklist').empty();
 
-	readOnly = false;
+	editMode();
 	$('#homeTitle').text('New checklist (unsaved)');
 	$('#editDialogLaunch').hide();
 
@@ -598,10 +598,11 @@ function loadChecklist(nameOfTemplate, template, transitionToHome, refresh) {
 		}
 
 		// change heading title of home page, restrict it to use-mode only
-		$('#homeTitle').text(nameOfTemplate + ' (unsaved)');
+		$('#homeTitle').text(nameOfTemplate + ' (Use Mode)');
 		$('#editDialogLaunch').show();
 		$('#editDialogLaunch').text("Edit Mode");
-		readOnly = true;
+		
+		readOnlyMode();
 
 		templatechecker = template;
 
@@ -638,6 +639,32 @@ function loadChecklist(nameOfTemplate, template, transitionToHome, refresh) {
 	 } catch (err) {
 	 	console.log("Template was not valid, " + err);
 	 }	
+}
+
+function readOnlyMode() { // aka. USE MODE
+	readOnly = true;
+
+	// in readOnly mode, remove new item and new label option
+	$('#newItem').hide();
+	$('#newLabel').hide();
+
+	$('#homeFooter').removeClass('ui-grid-c');
+	$('#homeFooter').addClass('ui-grid-a');
+	$('#clearDialogLaunch').removeClass('ui-block-c').addClass('ui-block-a');
+	$('#saveDialogLaunch').removeClass('ui-block-c').addClass('ui-block-b');
+
+}
+
+function editMode() { // aka. EDIT MODE
+	readOnly = false;
+	$('#newItem').show();
+	$('#newLabel').show();
+
+	$('#homeFooter').removeClass('ui-grid-a');
+	$('#homeFooter').addClass('ui-grid-c');
+
+	$('#clearDialogLaunch').removeClass('ui-block-a').addClass('ui-block-c');
+	$('#saveDialogLaunch').removeClass('ui-block-b').addClass('ui-block-d');
 }
 
 function resave(){
@@ -965,7 +992,7 @@ $(document).ready(function() {
 		else {
 			$('#homeTitle').text(currentChecklist + ' (edit mode)');
 			$(this).text("Use Mode");
-			readOnly = false;
+			editMode();
 		}
 	});
 
