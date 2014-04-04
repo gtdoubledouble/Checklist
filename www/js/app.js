@@ -422,9 +422,9 @@ function renderTemplates() {
 			 	});
 		 	}    	
 		}
+	} 	 
 
-	 	// $('#listOfChecklists:visible').listview('refresh');
-	} 	 	
+	$('#listOfChecklists').addClass('ui-listview ui-listview-inset ui-corner-all ui-shadow');	
  	
 }
 
@@ -894,6 +894,9 @@ function calculateProgress() {
 
     $( '#progressPercent' ).text('Progress: ' + progressPercentage + '%');
 
+    if( progressPercentage >= 100 )
+    	$('#completedPopup').popup("open");
+
     console.log(currentProgress,progressDenominator);
 }
 
@@ -972,7 +975,6 @@ $(document).ready(function() {
 		cancelRename();
 		// load page manually instead of using the a href link, which uses the default slow click
 		$.mobile.changePage('#templates', {transition: 'slide'});
-
 	});
 
 	$('#homeLink').on('vclick', function(){

@@ -66,6 +66,10 @@
 
             <div data-role="popup" id="savedDialog"></div>
 
+            <div data-role="popup" id="completedPopup">
+                <p>Checklist has been completed! Click reset to restart.</p>
+            </div>
+
             <div data-role="popup" id="clearDialog" data-overlay-theme="a" data-theme="a" data-dismissible="false" data-transition="pop" class="ui-corner-all">
             <div data-role="header" data-theme="a" class="ui-corner-top">
                 <h1>Clear</h1>
@@ -114,7 +118,7 @@
             <div data-role="fieldcontain">
                 <fieldset data-role="controlgroup" id="templateGroup">
                     
-                    <ul data-role="listview" id="listOfChecklists" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+                    <ul data-role="listview" id="listOfChecklists">
                     </ul>
 
                     <div data-role="popup" id="confirmDelete" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
