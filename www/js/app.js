@@ -656,6 +656,7 @@ function loadChecklist(nameOfTemplate, template, transitionToHome, refresh) {
 		// transition to current checklist page
 		if(transitionToHome == true) {
 			$.mobile.changePage('#home', {transition: 'slide', reverse: false});
+			resetButtons();
 		}		
 
 	 } catch (err) {
@@ -923,6 +924,11 @@ function calculateProgress() {
     	$('#completedPopup').popup("open");
 }
 
+function resetButtons() {
+	removeButtonHighlights();
+	$('#inputGrid').hide();
+}
+
 function removeButtonHighlights() {
 	$('.ui-btn-active').removeClass('ui-btn-active'); // jQuery Mobile doesn't unhighlight clicked buttons automatically
 }
@@ -1013,7 +1019,7 @@ $(document).ready(function() {
 
 	$('#clear').on('vclick', function(){ 
 		clearCurrentList();
-		removeButtonHighlights();
+		resetButtons();
 	});
 
 	/* Share the list */
@@ -1072,6 +1078,9 @@ $(document).ready(function() {
 
 	/* Save the list as a template */
 	$('#saveDialogLaunch').on('vclick', function(){ 
+
+		resetButtons();
+
 		if( readOnly == true ) {
 			$('#resetDialog').popup("open");
 			return;
