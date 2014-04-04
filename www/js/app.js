@@ -362,6 +362,8 @@ function checkForCollapsableSection() {
 			i=currentSectionCounter-1; // continue searching for next label in for-loop, where next i will be a label
 		}
 	}
+
+	calculateProgress();
 }
 
 function testStore() {
@@ -447,10 +449,6 @@ function decodeURIandLoad(cl){
 	var decodedChecklist = decodeURIComponent(cl);
 	console.log("The decoded checklist = " + decodedChecklist);
 	loadChecklist(null, decodedChecklist, false, false);
-}
-
-function isChildItem() {
-
 }
 
 function isParentItem(selector){
@@ -848,6 +846,41 @@ function deleteDetected(item, pos) {
 	$('[data-role="button"]').button(); 
 }
 
+function calculateProgress() {
+
+	var currentProgress = 0;
+	var progressDenominator = 0;
+
+	for( var i=0; i<listItems.length; i++ ) {
+		if( listItems[i].checkbox == true ) {
+			if( listItems[i].checked == true ) {
+				currentProgress++;	
+			}
+			
+			if( listItems[i].sublist != null && listItems[i].sublist.length > 0 )	{
+				for( var j=0; j<listItems[i].sublist.length; j++ ) {
+					if( listItems[i].sublist[j].checked == true ) {
+						currentProgress++;
+					}
+					progressDenominator++;
+				}
+			}	
+			
+			if( listItems[i].sublist == null || listItems[i].sublist.length == 0 ) progressDenominator++;
+		}
+	}
+
+	var progressPercentage = currentProgress/progressDenominator * 100;
+
+	$( '#progressbar' ).progressbar({
+      value: progressPercentage 
+    });
+
+    $( '#progressPercent' ).text('Progress: ' + progressPercentage + '%');
+
+    console.log(currentProgress,progressDenominator);
+}
+
 function removeButtonHighlights() {
 	$('.ui-btn-active').removeClass('ui-btn-active'); // jQuery Mobile doesn't unhighlight clicked buttons automatically
 }
@@ -1132,6 +1165,12 @@ $(document).ready(function() {
 	renderTemplates();
 
 	$('#editDialogLaunch').hide();
+
+	$( '#progressbar' ).progressbar({
+      value: 0
+    });
+
+    $( '#progressPercent' ).text('Progress: 0%');
 
 	// initialize PhoneGap/Cordova code
 
