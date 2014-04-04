@@ -574,6 +574,24 @@ function listToArray(){
 	//console.log('Execution time (in milliseconds) ' + time);
 }
 
+function resetList() {
+	for( var i=0; i<listItems.length; i++ ) {
+		if( listItems[i].checkbox == true ) {
+			listItems[i].checked = false;
+			listItems[i].selector.children('input[type=checkbox]').prop('checked', false);
+			if( listItems[i].sublist != null && listItems[i].sublist.length > 0 ) {
+				console.log("uncheck sublist checkbox1");
+				for( var k=0; k<listItems[i].sublist.length; k++ ) {
+					listItems[i].sublist[k].checked = false;
+					listItems[i].sublist[k].selector.children('input[type=checkbox]').prop('checked', false);
+				}
+			}
+		}
+	}
+
+	calculateProgress();
+}
+
 function rerender() {
 	// refreshes the current checklist based on data in bareListArray, useful when undesirable change occurs
 
@@ -1049,6 +1067,11 @@ $(document).ready(function() {
 
 	/* Save the list as a template */
 	$('#saveDialogLaunch').on('vclick', function(){ 
+		if( readOnly == true ) {
+			$('#resetDialog').popup("open");
+			return;
+		}
+
 		cancelRename();
 		if( bareListArray.length == 0 ) {
 			$('#noSavingDialog').popup("open", { overlayTheme: "a" });
@@ -1065,7 +1088,7 @@ $(document).ready(function() {
 	});
 
 	$('#resetConfirm').on('vclick', function(){ 
-		rerender();
+		resetList();
 	});
 
 	$('#save').on('vclick', function(){
