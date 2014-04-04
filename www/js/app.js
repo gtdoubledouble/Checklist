@@ -651,8 +651,8 @@ function readOnlyMode() { // aka. USE MODE
 	// in readOnly mode, remove new item and new label option
 	$('#newItem').hide();
 	$('#newLabel').hide();
-	$('#saveDialogLaunch').hide();
-	$('#resetDialogLaunch').show();
+	$('#saveDialogLaunch').attr('id','resetDialogLaunch');
+	$('#resetDialogLaunch').children('a').text('Reset');
 
 	$('#progressbar').show();
 	$('#progressPercent').show();
@@ -660,7 +660,7 @@ function readOnlyMode() { // aka. USE MODE
 	$('#homeFooter').removeClass('ui-grid-c');
 	$('#homeFooter').addClass('ui-grid-a');
 	$('#clearDialogLaunch').removeClass('ui-block-c').addClass('ui-block-a');
-	$('#saveDialogLaunch').removeClass('ui-block-c').addClass('ui-block-b');
+	$('#resetDialogLaunch').removeClass('ui-block-c').addClass('ui-block-b');
 
 }
 
@@ -668,8 +668,8 @@ function editMode() { // aka. EDIT MODE
 	readOnly = false;
 	$('#newItem').show();
 	$('#newLabel').show();
-	$('#saveDialogLaunch').show();
-	$('#resetDialogLaunch').hide();
+	$('#resetDialogLaunch').attr('id','saveDialogLaunch');
+	$('#saveDialogLaunch').children('a').text('Save');
 
 	$('#progressbar').hide();
 	$('#progressPercent').hide();
