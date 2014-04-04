@@ -52,9 +52,19 @@
                 </div>
             </div>
 
+            <div data-role="popup" id="resetDialog" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
+            <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                <h3 class="ui-title">Untick all checkboxes?</h3>
+                <a href="#" id="resetConfirm" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Confirm</a>
+                <a href="#" class="cancelBtn" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>            
+                </div>
+            </div>
+
             <div data-role="popup" id="noSavingDialog">
                 <p>Empty list cannot be saved.<p>
             </div>
+
+            <div data-role="popup" id="savedDialog"></div>
 
             <div data-role="popup" id="clearDialog" data-overlay-theme="a" data-theme="a" data-dismissible="false" data-transition="pop" class="ui-corner-all">
             <div data-role="header" data-theme="a" class="ui-corner-top">
@@ -84,6 +94,7 @@
                     <li id="newLabel"><a href="#" data-icon="plus">New Label</a></li>
                     <li id="clearDialogLaunch"><a href="#" data-icon="delete" data-rel="popup" data-position-to="window" data-transition="pop">Clear List</a></li>
                     <li id="saveDialogLaunch"><a href="#" data-icon="check" data-rel="popup" data-position-to="window" data-transition="pop">Save List</a></li>
+                    <li id="resetDialogLaunch"><a href="#" data-icon="back" data-rel="popup" data-position-to="window" data-transition="pop">Reset</a></li>
                     <!-- for testing purposes
                     <li id="testStore"><a href="#" data-icon="grid">Store</a></li>
                     <li id="testRetrieve"><a href="#" data-icon="grid">Get</a></li>

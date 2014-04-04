@@ -42,7 +42,10 @@ function createNewSublistItem( fieldValue ) {
     $('#checklist').children('li').last().children('ul').append(newSublistItem);
 
 	$('#sublist-checkbox-'+subOrderCount).change( function(event) { 
-		if( $(this).parent().hasClass('rename') ) return; // don't trigger checkbox change event if renaming
+		if( readOnly == false || $(this).parent().hasClass('rename') ) {
+			$(this).prop("checked", false);
+			return; // don't trigger checkbox change event if renaming
+		}
 
 		if( $(this).parent().parent().parent().parent().children('div').children('a').length > 0 ) {
 			
@@ -145,7 +148,11 @@ function createNewItem( fieldValue ) {
 
     // auto ticking of higher level boxes
 	$('#checkbox-'+itemNum).change( function(event) { 
-		if( $(this).parent().hasClass('rename') ) return; // don't trigger checkbox change event if renaming
+
+		if( readOnly == false || $(this).parent().hasClass('rename') ) {
+			$(this).prop("checked", false);
+			return; // don't trigger checkbox change event if renaming
+		}
 
 		if( $(this).parent().parent().parent().parent().children('div').children('a').length > 0 ) {
 			
@@ -216,8 +223,7 @@ function createNewItem( fieldValue ) {
     });  
 
     $( 'div.checkbox-'+itemNum ).bind("mousedown", function(event) {
-    	if( readOnly == true ) {
-    		
+    	if( readOnly == true ) {    		
     		return false;
     	}
     });
@@ -361,7 +367,7 @@ function checkForCollapsableSection() {
 
 			i=currentSectionCounter-1; // continue searching for next label in for-loop, where next i will be a label
 		}
-	}
+	}	
 
 	calculateProgress();
 }
@@ -435,7 +441,7 @@ function clearCurrentList() {
 	$('#checklist').empty();
 
 	editMode();
-	$('#homeTitle').text('New checklist (unsaved)');
+	$('#homeTitle').text('New checklist (unsaved, edit mode)');
 	$('#editDialogLaunch').hide();
 
 	orderCount = 1;
@@ -645,6 +651,11 @@ function readOnlyMode() { // aka. USE MODE
 	// in readOnly mode, remove new item and new label option
 	$('#newItem').hide();
 	$('#newLabel').hide();
+	$('#saveDialogLaunch').hide();
+	$('#resetDialogLaunch').show();
+
+	$('#progressbar').show();
+	$('#progressPercent').show();
 
 	$('#homeFooter').removeClass('ui-grid-c');
 	$('#homeFooter').addClass('ui-grid-a');
@@ -657,6 +668,11 @@ function editMode() { // aka. EDIT MODE
 	readOnly = false;
 	$('#newItem').show();
 	$('#newLabel').show();
+	$('#saveDialogLaunch').show();
+	$('#resetDialogLaunch').hide();
+
+	$('#progressbar').hide();
+	$('#progressPercent').hide();
 
 	$('#homeFooter').removeClass('ui-grid-a');
 	$('#homeFooter').addClass('ui-grid-c');
@@ -856,7 +872,7 @@ function calculateProgress() {
 			if( listItems[i].checked == true ) {
 				currentProgress++;	
 			}
-			
+
 			if( listItems[i].sublist != null && listItems[i].sublist.length > 0 )	{
 				for( var j=0; j<listItems[i].sublist.length; j++ ) {
 					if( listItems[i].sublist[j].checked == true ) {
@@ -1042,6 +1058,14 @@ $(document).ready(function() {
 		}
 	});
 
+	$('#resetDialogLaunch').on('vclick', function(){ 
+		$('#resetDialog').popup("open", { overlayTheme: "a" });
+	});
+
+	$('#resetConfirm').on('vclick', function(){ 
+		rerender();
+	});
+
 	$('#save').on('vclick', function(){
 
 		var savedListName = $('#saveField').val().replace(/\s/g,"-"); // replace spaces with hyphens for valid id
@@ -1062,7 +1086,14 @@ $(document).ready(function() {
 
 		renderTemplates();
 
-		$('#homeTitle').text(savedListName + ' (saved)');
+		clearCurrentList();
+
+		setTimeout(function() {
+			$('#savedDialog').append('<p>List saved successfully as a template.</p>');
+			$('#savedDialog').popup("open");
+		}, 300);
+		
+		//$('#homeTitle').text(savedListName + ' (saved)');
 	});
 
 	/* Template page template links */
@@ -1159,6 +1190,7 @@ $(document).ready(function() {
 
 	var existingChecklist = $.jStorage.get('untitled');
 	loadChecklist(null, existingChecklist, false, true); // name of template is [null] (untitled), template, transitionToHome, refresh
+	editMode();
 
 	// load the template page
 	listOfChecklists = $.jStorage.get('listOfChecklists') || {}; // if variable didn't exist in local storage, use empty object instead
