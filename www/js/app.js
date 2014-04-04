@@ -907,15 +907,15 @@ function calculateProgress() {
 	var progressPercentage = currentProgress/progressDenominator * 100;
 
 	$( '#progressbar' ).progressbar({
-      value: progressPercentage 
+      value: progressPercentage
     });
+
+    progressPercentage = Math.round(progressPercentage);
 
     $( '#progressPercent' ).text('Progress: ' + progressPercentage + '%');
 
     if( progressPercentage >= 100 )
     	$('#completedPopup').popup("open");
-
-    console.log(currentProgress,progressDenominator);
 }
 
 function removeButtonHighlights() {
