@@ -884,22 +884,26 @@ function deleteDetected(item, pos) {
 
 function calculateProgress() {
 
-	var currentProgress = 0;
-	var progressDenominator = 0;
+	console.log("calculate Progress");
+
+	currentProgress = 0;
+	progressDenominator = 0;
 
 	for( var i=0; i<listItems.length; i++ ) {
 		if( listItems[i].checkbox == true ) {
-			if( listItems[i].checked == true ) {
-				currentProgress++;	
+			if( listItems[i].selector.children('input[type=checkbox]').prop('checked') == true ) {
+				if( listItems[i].sublist == null || listItems[i].sublist.length == 0 ) {
+					currentProgress++;	
+				}
 			}
 
 			if( listItems[i].sublist != null && listItems[i].sublist.length > 0 )	{
 				for( var j=0; j<listItems[i].sublist.length; j++ ) {
-					if( listItems[i].sublist[j].checked == true ) {
+					if( listItems[i].sublist[j].selector.children('input[type=checkbox]').prop('checked') == true ) {
 						currentProgress++;
-					}
-					progressDenominator++;
+					}					
 				}
+				progressDenominator = progressDenominator + listItems[i].sublist.length;
 			}	
 			
 			if( listItems[i].sublist == null || listItems[i].sublist.length == 0 ) progressDenominator++;
