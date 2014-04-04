@@ -678,9 +678,8 @@ function readOnlyMode() { // aka. USE MODE
 	$('#homeFooter').removeClass('ui-grid-c');
 	$('#homeFooter').addClass('ui-grid-a');
 	$('#clearDialogLaunch').removeClass('ui-block-c').addClass('ui-block-a');
-	//$('#resetDialogLaunch').removeClass('ui-block-c').addClass('ui-block-b');
-	// turns out only the below line works
-	$('#saveDialogLaunch').removeClass('ui-block-c').addClass('ui-block-b');
+	//$('#saveDialogLaunch').removeClass('ui-block-d').addClass('ui-block-b');
+	$('#resetDialogLaunch').removeClass('ui-block-d').addClass('ui-block-b');
 
 }
 
