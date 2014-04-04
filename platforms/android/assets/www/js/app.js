@@ -42,7 +42,10 @@ function createNewSublistItem( fieldValue ) {
     $('#checklist').children('li').last().children('ul').append(newSublistItem);
 
 	$('#sublist-checkbox-'+subOrderCount).change( function(event) { 
-		if( $(this).parent().hasClass('rename') ) return; // don't trigger checkbox change event if renaming
+		if( readOnly == false || $(this).parent().hasClass('rename') ) {
+			$(this).prop("checked", false);
+			return; // don't trigger checkbox change event if renaming
+		}
 
 		if( $(this).parent().parent().parent().parent().children('div').children('a').length > 0 ) {
 			
@@ -145,7 +148,11 @@ function createNewItem( fieldValue ) {
 
     // auto ticking of higher level boxes
 	$('#checkbox-'+itemNum).change( function(event) { 
-		if( $(this).parent().hasClass('rename') ) return; // don't trigger checkbox change event if renaming
+
+		if( readOnly == false || $(this).parent().hasClass('rename') ) {
+			$(this).prop("checked", false);
+			return; // don't trigger checkbox change event if renaming
+		}
 
 		if( $(this).parent().parent().parent().parent().children('div').children('a').length > 0 ) {
 			
@@ -216,8 +223,7 @@ function createNewItem( fieldValue ) {
     });  
 
     $( 'div.checkbox-'+itemNum ).bind("mousedown", function(event) {
-    	if( readOnly == true ) {
-    		
+    	if( readOnly == true ) {    		
     		return false;
     	}
     });
@@ -318,9 +324,11 @@ function checkForCollapsableSection() {
 				if( listItems[j].checkbox == true && nextLabelFound == false ) {
 					console.log("Check if this item is checked: " + listItems[j].label + " = " + listItems[j].checked); // check if each checkbox is checked
 					allItemsChecked = allItemsChecked & listItems[j].checked;
-					//if(allItemsChecked == false) break;
 					currentSectionCounter++;
 				} else {
+					if( listItems[j].checkbox == false  && listItems[j-1].checkbox == false ) {
+						allItemsChecked = false;
+					}
 					nextLabelFound = true;
 				}
 			}
@@ -359,7 +367,9 @@ function checkForCollapsableSection() {
 
 			i=currentSectionCounter-1; // continue searching for next label in for-loop, where next i will be a label
 		}
-	}
+	}	
+
+	calculateProgress();
 }
 
 function testStore() {
@@ -412,9 +422,9 @@ function renderTemplates() {
 			 	});
 		 	}    	
 		}
+	} 	 
 
-	 	// $('#listOfChecklists:visible').listview('refresh');
-	} 	 	
+	$('#listOfChecklists').addClass('ui-listview ui-listview-inset ui-corner-all ui-shadow');	
  	
 }
 
@@ -430,8 +440,8 @@ function clearCurrentList() {
 
 	$('#checklist').empty();
 
-	readOnly = false;
-	$('#homeTitle').text('New checklist (unsaved)');
+	editMode();
+	$('#homeTitle').text('New checklist (unsaved, edit mode)');
 	$('#editDialogLaunch').hide();
 
 	orderCount = 1;
@@ -445,10 +455,6 @@ function decodeURIandLoad(cl){
 	var decodedChecklist = decodeURIComponent(cl);
 	console.log("The decoded checklist = " + decodedChecklist);
 	loadChecklist(null, decodedChecklist, false, false);
-}
-
-function isChildItem() {
-
 }
 
 function isParentItem(selector){
@@ -568,6 +574,24 @@ function listToArray(){
 	//console.log('Execution time (in milliseconds) ' + time);
 }
 
+function resetList() {
+	for( var i=0; i<listItems.length; i++ ) {
+		if( listItems[i].checkbox == true ) {
+			listItems[i].checked = false;
+			listItems[i].selector.children('input[type=checkbox]').prop('checked', false);
+			if( listItems[i].sublist != null && listItems[i].sublist.length > 0 ) {
+				console.log("uncheck sublist checkbox1");
+				for( var k=0; k<listItems[i].sublist.length; k++ ) {
+					listItems[i].sublist[k].checked = false;
+					listItems[i].sublist[k].selector.children('input[type=checkbox]').prop('checked', false);
+				}
+			}
+		}
+	}
+
+	calculateProgress();
+}
+
 function rerender() {
 	// refreshes the current checklist based on data in bareListArray, useful when undesirable change occurs
 
@@ -596,10 +620,11 @@ function loadChecklist(nameOfTemplate, template, transitionToHome, refresh) {
 		}
 
 		// change heading title of home page, restrict it to use-mode only
-		$('#homeTitle').text(nameOfTemplate + ' (unsaved)');
+		$('#homeTitle').text(nameOfTemplate + ' (Use Mode)');
 		$('#editDialogLaunch').show();
 		$('#editDialogLaunch').text("Edit Mode");
-		readOnly = true;
+		
+		readOnlyMode();
 
 		templatechecker = template;
 
@@ -631,11 +656,49 @@ function loadChecklist(nameOfTemplate, template, transitionToHome, refresh) {
 		// transition to current checklist page
 		if(transitionToHome == true) {
 			$.mobile.changePage('#home', {transition: 'slide', reverse: false});
+			resetButtons();
 		}		
 
 	 } catch (err) {
 	 	console.log("Template was not valid, " + err);
 	 }	
+}
+
+function readOnlyMode() { // aka. USE MODE
+	readOnly = true;
+
+	// in readOnly mode, remove new item and new label option
+	$('#newItem').hide();
+	$('#newLabel').hide();
+	$('#saveDialogLaunch').attr('id','resetDialogLaunch');
+	$('#resetDialogLaunch').children('a').text('Reset');
+
+	$('#progressbar').show();
+	$('#progressPercent').show();
+
+	$('#homeFooter').removeClass('ui-grid-c');
+	$('#homeFooter').addClass('ui-grid-a');
+	$('#clearDialogLaunch').removeClass('ui-block-c').addClass('ui-block-a');
+	//$('#saveDialogLaunch').removeClass('ui-block-d').addClass('ui-block-b');
+	$('#resetDialogLaunch').removeClass('ui-block-d').addClass('ui-block-b');
+
+}
+
+function editMode() { // aka. EDIT MODE
+	readOnly = false;
+	$('#newItem').show();
+	$('#newLabel').show();
+	$('#resetDialogLaunch').attr('id','saveDialogLaunch');
+	$('#saveDialogLaunch').children('a').text('Save');
+
+	$('#progressbar').hide();
+	$('#progressPercent').hide();
+
+	$('#homeFooter').removeClass('ui-grid-a');
+	$('#homeFooter').addClass('ui-grid-c');
+
+	$('#clearDialogLaunch').removeClass('ui-block-a').addClass('ui-block-c');
+	$('#saveDialogLaunch').removeClass('ui-block-b').addClass('ui-block-d');
 }
 
 function resave(){
@@ -690,21 +753,23 @@ function allowCollapsableSections() {
 		console.log("collapse section button pressed");
 
 		// identify current section first by getting selector for <div> of the related label
-		var currentLabel = $(this).parent();
+		currentLabel = $(this).parent().parent().html();
 
+		var endOfSectionFound = false;
 		for( i=0; i<listItems.length; i++ ) {
-			if( listItems[i].selector.html() == currentLabel.html() ) {
+			if( listItems[i].selector.parent().html() == currentLabel ) {
 				for( j=i+1; j<listItems.length; j++ ) {
-					if( listItems[j].checkbox == true ) {
+					if( listItems[j].checkbox == true && endOfSectionFound == false ) {
 						listItems[j].selector.toggle('slow');
+						console.log("collapse this checkbox = " + j);
 						// if this item has sublist items, hide/show those too
 						if( listItems[j].sublist ) {
 							for( k=0; k<listItems[j].sublist.length; k++ ) {
 								listItems[j].sublist[k].selector.toggle('slow');
 							}
 						}
-					} else {
-						break;
+					} else if( listItems[j].checkbox == false ) {
+						endOfSectionFound = true;
 					}
 				}
 			}
@@ -817,6 +882,53 @@ function deleteDetected(item, pos) {
 	$('[data-role="button"]').button(); 
 }
 
+function calculateProgress() {
+
+	console.log("calculate Progress");
+
+	currentProgress = 0;
+	progressDenominator = 0;
+
+	for( var i=0; i<listItems.length; i++ ) {
+		if( listItems[i].checkbox == true ) {
+			if( listItems[i].selector.children('input[type=checkbox]').prop('checked') == true ) {
+				if( listItems[i].sublist == null || listItems[i].sublist.length == 0 ) {
+					currentProgress++;	
+				}
+			}
+
+			if( listItems[i].sublist != null && listItems[i].sublist.length > 0 )	{
+				for( var j=0; j<listItems[i].sublist.length; j++ ) {
+					if( listItems[i].sublist[j].selector.children('input[type=checkbox]').prop('checked') == true ) {
+						currentProgress++;
+					}					
+				}
+				progressDenominator = progressDenominator + listItems[i].sublist.length;
+			}	
+			
+			if( listItems[i].sublist == null || listItems[i].sublist.length == 0 ) progressDenominator++;
+		}
+	}
+
+	var progressPercentage = currentProgress/progressDenominator * 100;
+
+	$( '#progressbar' ).progressbar({
+      value: progressPercentage
+    });
+
+    progressPercentage = Math.round(progressPercentage);
+
+    $( '#progressPercent' ).text('Progress: ' + progressPercentage + '%');
+
+    if( progressPercentage >= 100 )
+    	$('#completedPopup').popup("open");
+}
+
+function resetButtons() {
+	removeButtonHighlights();
+	$('#inputGrid').hide();
+}
+
 function removeButtonHighlights() {
 	$('.ui-btn-active').removeClass('ui-btn-active'); // jQuery Mobile doesn't unhighlight clicked buttons automatically
 }
@@ -892,7 +1004,6 @@ $(document).ready(function() {
 		cancelRename();
 		// load page manually instead of using the a href link, which uses the default slow click
 		$.mobile.changePage('#templates', {transition: 'slide'});
-
 	});
 
 	$('#homeLink').on('vclick', function(){
@@ -908,7 +1019,7 @@ $(document).ready(function() {
 
 	$('#clear').on('vclick', function(){ 
 		clearCurrentList();
-		removeButtonHighlights();
+		resetButtons();
 	});
 
 	/* Share the list */
@@ -961,12 +1072,20 @@ $(document).ready(function() {
 		else {
 			$('#homeTitle').text(currentChecklist + ' (edit mode)');
 			$(this).text("Use Mode");
-			readOnly = false;
+			editMode();
 		}
 	});
 
 	/* Save the list as a template */
 	$('#saveDialogLaunch').on('vclick', function(){ 
+
+		resetButtons();
+
+		if( readOnly == true ) {
+			$('#resetDialog').popup("open");
+			return;
+		}
+
 		cancelRename();
 		if( bareListArray.length == 0 ) {
 			$('#noSavingDialog').popup("open", { overlayTheme: "a" });
@@ -976,6 +1095,14 @@ $(document).ready(function() {
 		} else {
 			$('#saveDialog').popup("open", { overlayTheme: "a" });
 		}
+	});
+
+	$('#resetDialogLaunch').on('vclick', function(){ 
+		$('#resetDialog').popup("open", { overlayTheme: "a" });
+	});
+
+	$('#resetConfirm').on('vclick', function(){ 
+		resetList();
 	});
 
 	$('#save').on('vclick', function(){
@@ -998,7 +1125,13 @@ $(document).ready(function() {
 
 		renderTemplates();
 
-		$('#homeTitle').text(savedListName + ' (saved)');
+		clearCurrentList();
+
+		setTimeout(function() {
+			$('#savedDialog').popup("open");
+		}, 300);
+		
+		//$('#homeTitle').text(savedListName + ' (saved)');
 	});
 
 	/* Template page template links */
@@ -1095,12 +1228,19 @@ $(document).ready(function() {
 
 	var existingChecklist = $.jStorage.get('untitled');
 	loadChecklist(null, existingChecklist, false, true); // name of template is [null] (untitled), template, transitionToHome, refresh
+	editMode();
 
 	// load the template page
 	listOfChecklists = $.jStorage.get('listOfChecklists') || {}; // if variable didn't exist in local storage, use empty object instead
 	renderTemplates();
 
 	$('#editDialogLaunch').hide();
+
+	$( '#progressbar' ).progressbar({
+      value: 0
+    });
+
+    $( '#progressPercent' ).text('Progress: 0%');
 
 	// initialize PhoneGap/Cordova code
 

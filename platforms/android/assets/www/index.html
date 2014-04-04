@@ -35,7 +35,7 @@
             </div>
         </header>       
         <div data-role="content"> 
-
+            <span id="progressPercent">Progress:</span><div id="progressbar"></div>
             <ul id="checklist" class = "list" data-role="none" data-inset="true">
             </ul>
 
@@ -52,8 +52,24 @@
                 </div>
             </div>
 
+            <div data-role="popup" id="resetDialog" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
+            <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                <h3 class="ui-title">Untick all checkboxes?</h3>
+                <a href="#" id="resetConfirm" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Confirm</a>
+                <a href="#" class="cancelBtn" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>            
+                </div>
+            </div>
+
             <div data-role="popup" id="noSavingDialog">
                 <p>Empty list cannot be saved.<p>
+            </div>
+
+            <div data-role="popup" id="savedDialog">
+                <p>Checklist has been saved successfully as a template.</p>
+            </div>
+
+            <div data-role="popup" id="completedPopup">
+                <p>Checklist has been completed! Click reset to restart.</p>
             </div>
 
             <div data-role="popup" id="clearDialog" data-overlay-theme="a" data-theme="a" data-dismissible="false" data-transition="pop" class="ui-corner-all">
@@ -79,11 +95,11 @@
                 <div class="ui-block-b main"><input type="button" value="Cancel" id="cancelRenameButton" data-inline="true"/></div>
             </div>
             <nav data-role="navbar">
-                <ul>
+                <ul id="homeFooter">
                     <li id="newItem"><a href="#" data-icon="plus">New Item</a></li>
                     <li id="newLabel"><a href="#" data-icon="plus">New Label</a></li>
                     <li id="clearDialogLaunch"><a href="#" data-icon="delete" data-rel="popup" data-position-to="window" data-transition="pop">Clear List</a></li>
-                    <li id="saveDialogLaunch"><a href="#" data-icon="check" data-rel="popup" data-position-to="window" data-transition="pop">Save List</a></li>
+                    <li id="saveDialogLaunch"><a href="#" data-icon="check" data-rel="popup" data-position-to="window" data-transition="pop">Save List</a></li>                    
                     <!-- for testing purposes
                     <li id="testStore"><a href="#" data-icon="grid">Store</a></li>
                     <li id="testRetrieve"><a href="#" data-icon="grid">Get</a></li>
@@ -104,7 +120,7 @@
             <div data-role="fieldcontain">
                 <fieldset data-role="controlgroup" id="templateGroup">
                     
-                    <ul data-role="listview" id="listOfChecklists" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+                    <ul data-role="listview" id="listOfChecklists">
                     </ul>
 
                     <div data-role="popup" id="confirmDelete" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
@@ -120,7 +136,7 @@
 
                     <div data-role="popup" id="confirmDeleteTemplate" data-transition="pop" data-overlay-theme="a" data-theme="a" data-dismissible="false" class="ui-corner-all">
                         <div data-role="header" data-theme="a" class="ui-corner-top">
-                            <h1>Delete this template?</h1>
+                            <h1>Delete?</h1>
                         </div>
                         <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
                             <a href="#" id="confirmDeleteTemplateBtn" data-role="button" data-inline="true" data-theme="b">Confirm</a>
@@ -172,10 +188,9 @@
     
     </div>
         <link rel="stylesheet" href="jquery/jquery.mobile-1.4.0.css" />
+        <link rel="stylesheet" href="css/jquery-ui.css">
         <link rel="stylesheet" href="css/custom.css" />
-        
         <script type="text/javascript" src="cordova.js"></script> 
-             
         <script src="jquery/jquery-1.9.1.min.js"></script>  
         <script src="jquery/jquery.mobile-1.4.0.min.js"></script>        
         <script src="jquery/jquery-ui.min.js"></script>
@@ -183,10 +198,8 @@
         <script src="jquery/jquery.mjs.nestedSortable.js"></script>      
         <script src="js/json2.js"></script>
         <script src="js/jstorage.js"></script>  
-         
         <script type="text/javascript" src="js/index.js"></script>       
         <script type="text/javascript" src="js/app.js"></script> 
         <script type="text/javascript" src="js/SocialSharing.js"></script>
-         <!--script type="text/javascript" src="js/fileIO.js"></script>
     </body>
 </html>

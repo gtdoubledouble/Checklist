@@ -24,6 +24,7 @@
 /Users/garytse/workspace/cl/platforms/android/assets/www/css/checkbox.png \
 /Users/garytse/workspace/cl/platforms/android/assets/www/css/custom.css \
 /Users/garytse/workspace/cl/platforms/android/assets/www/css/index.css \
+/Users/garytse/workspace/cl/platforms/android/assets/www/css/jquery-ui.css \
 /Users/garytse/workspace/cl/platforms/android/assets/www/img/checkbox.png \
 /Users/garytse/workspace/cl/platforms/android/assets/www/img/logo.png \
 /Users/garytse/workspace/cl/platforms/android/assets/www/jquery/jquery-1.9.1.min.js \
