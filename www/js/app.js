@@ -1091,7 +1091,6 @@ $(document).ready(function() {
 		clearCurrentList();
 
 		setTimeout(function() {
-			$('#savedDialog').append('<p>List saved successfully as a template.</p>');
 			$('#savedDialog').popup("open");
 		}, 300);
 		
