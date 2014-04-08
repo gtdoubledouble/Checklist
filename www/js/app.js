@@ -580,7 +580,6 @@ function resetList() {
 			listItems[i].checked = false;
 			listItems[i].selector.children('input[type=checkbox]').prop('checked', false);
 			if( listItems[i].sublist != null && listItems[i].sublist.length > 0 ) {
-				console.log("uncheck sublist checkbox1");
 				for( var k=0; k<listItems[i].sublist.length; k++ ) {
 					listItems[i].sublist[k].checked = false;
 					listItems[i].sublist[k].selector.children('input[type=checkbox]').prop('checked', false);
@@ -590,6 +589,25 @@ function resetList() {
 	}
 
 	calculateProgress();
+	checkForCollapsableSection();
+
+	expandAll();
+}
+
+function expandAll() {
+	// expand all possible lists
+	for( var i=0; i<listItems.length; i++ ) {
+		listItems[i].selector.show();
+		if( listItems[i].sublist != null && listItems[i].sublist.length > 0 ) {
+			listItems[i].selector.parent().children('ul').show();
+			// make all the expand/collapse buttons into (-), toggle the collapsed class properly
+			listItems[i].selector.children('a').removeClass('collapsed');
+			listItems[i].selector.children('a').text('(-)');
+			for( var k=0; k<listItems[i].sublist.length; k++ ) {
+				listItems[i].sublist[k].selector.show();
+			}
+		}		
+	}
 }
 
 function rerender() {
