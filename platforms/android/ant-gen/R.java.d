@@ -1,4 +1,4 @@
-/Users/garytse/workspace/cl/platforms/android/ant-gen/com/garytse89/checklist/R.java \
+/Users/garytse/workspace/cl/platforms/android/ant-gen/com/garytse89/checklistEditor/R.java \
  : /Users/garytse/workspace/cl/platforms/android/res/drawable/icon.png \
 /Users/garytse/workspace/cl/platforms/android/res/drawable-hdpi/icon.png \
 /Users/garytse/workspace/cl/platforms/android/res/drawable-ldpi/icon.png \

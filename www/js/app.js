@@ -1121,6 +1121,7 @@ $(document).ready(function() {
 
 	$('#resetConfirm').on('vclick', function(){ 
 		resetList();
+		resetButtons();
 	});
 
 	$('#save').on('vclick', function(){
