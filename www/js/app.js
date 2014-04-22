@@ -498,7 +498,7 @@ function listToBareArray() {
 
 	});
 
-	console.log(JSON.stringify(bareListArray));
+	//console.log(JSON.stringify(bareListArray));
 
 }
 
@@ -722,6 +722,7 @@ function editMode() { // aka. EDIT MODE
 function resave(){
 	if( deleting == true ) return; // resave only when a delete is actually confirmed.
 
+	console.log('resave');
 	// if item or label was also being renamed and then dragged, cancel that
 	cancelRename();
 
@@ -729,15 +730,14 @@ function resave(){
     	if( $(this).children('ul').html() == '' ) { 
     		// if sublist no longer exists, remove the (+) button
     		console.log('remove (+) button');
-			$(this).children('div').children('a').remove();
-
-			$(this).children('ul').addClass('padding');
+			$(this).children('div').children('a').remove();			
     	} else if( typeof $(this).children('ul').html() != "undefined" && $(this).children('div').children('a').length == 0 ){ // cannot be undefined
     		// collapsable button is only added if it didn't exist already (jQuery selector for it should have length of 0 then)
     		console.log("we're adding a (+) button due to this html: " + $(this).children('ul').html());
     		var expandButton = '<a href="#" class="collapseButton">(-)</a>';
     		$(this).children('div').append(expandButton); // append '+' button   
-    		allowCollapsableSublists();  
+    		allowCollapsableSublists(); 
+    		$(this).children('ul').addClass('padding'); 
     	}    	
 	});
 
