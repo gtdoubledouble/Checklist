@@ -424,8 +424,9 @@ function renderTemplates() {
 		}
 	} 	 
 
-	$('#listOfChecklists').addClass('ui-listview ui-listview-inset ui-corner-all ui-shadow');	
- 	
+	// buggy; jQuery Mobile does not manually refresh the template list view sometimes and the styling is lost
+	$('#listOfChecklists').listview();
+	$('#listOfChecklists').filterable();
 }
 
 function clearCurrentList() {
