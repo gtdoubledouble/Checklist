@@ -32,7 +32,7 @@ function createNewSublistItem( fieldValue ) {
 
 	// find the last item in the current checklist HTML, insert an <ul> if it doesnt exist, and then append the sublist item to the <ul>
 	if($('#checklist').children('li').last().children('ul').length == 0 ) {
-		$('#checklist').children('li').last().append('<ul></ul>');
+		$('#checklist').children('li').last().append('<ul class="padding"></ul>');
 		//subOrderCount = 1;
 	}
 
@@ -730,6 +730,8 @@ function resave(){
     		// if sublist no longer exists, remove the (+) button
     		console.log('remove (+) button');
 			$(this).children('div').children('a').remove();
+
+			$(this).children('ul').addClass('padding');
     	} else if( typeof $(this).children('ul').html() != "undefined" && $(this).children('div').children('a').length == 0 ){ // cannot be undefined
     		// collapsable button is only added if it didn't exist already (jQuery selector for it should have length of 0 then)
     		console.log("we're adding a (+) button due to this html: " + $(this).children('ul').html());
@@ -1262,6 +1264,5 @@ $(document).ready(function() {
     $( '#progressPercent' ).text('Progress: 0%');
 
 	// initialize PhoneGap/Cordova code
-
 	app.initialize();
 });

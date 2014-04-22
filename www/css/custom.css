@@ -1,10 +1,19 @@
+ul {
+	-webkit-padding-start: 10px;
+}
+
+.padding {
+	-webkit-padding-start: 30px;
+}
+
 .ui-listview {
-    margin-left: 20px !important;
+    margin-left: 0px !important;
     margin-right:0px !important;
 }
 
 .checklist-label {
 	font-size:20px;
+	white-space: normal !important;
 }
 
 .noStyle {
@@ -34,9 +43,11 @@ input[type=checkbox].css-checkbox + label.css-label {
 	line-height:26px;
 	background-repeat:no-repeat;
 	background-position: 0 0;
-	font-size:20px;
+	font-size:16px;
 	vertical-align:middle;
 	cursor:pointer;
+
+	white-space: normal !important;
 
 }
 
