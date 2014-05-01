@@ -720,6 +720,8 @@ function editMode() { // aka. EDIT MODE
 	$('#saveDialogLaunch').removeClass('ui-block-b').addClass('ui-block-d');
 }
 
+// this function is run on every drag of the item, since we need to detect whether or not a new sublist has been created
+// and to attach expand/collapse buttons as needed
 function resave(){
 	if( deleting == true ) return; // resave only when a delete is actually confirmed.
 
@@ -754,6 +756,7 @@ function resave(){
 	
 }
 
+// makes the list exposed to the nestedSortable library
 function allowSortable() {
 	console.log('allow sortable');
 
@@ -764,9 +767,9 @@ function allowSortable() {
     });    
 }
 
+// this function is run on a nestedSortable->mouseStop(), since a new collapsable button is created and needs to have a listener
+// it is also run on the page loading to attach listeners to all existing collapsable buttons
 function allowCollapsableSections() {
-	// this function is run on a nestedSortable->mouseStop(), since a new collapsable button is created and needs to have a listener
-	// it is also run on the page loading to attach listeners to all existing collapsable buttons
 	
 	$('.collapseSectionButton').off('vclick');
 
@@ -807,10 +810,10 @@ function allowCollapsableSections() {
 	});
 }
 
+// this function is run on a nestedSortable->mouseStop(), since a new collapsable button is created and needs to have a listener
+// it is also run on the page loading to attach listeners to all existing collapsable buttons
 function allowCollapsableSublists() {
-	// this function is run on a nestedSortable->mouseStop(), since a new collapsable button is created and needs to have a listener
-	// it is also run on the page loading to attach listeners to all existing collapsable buttons
-
+	
 	$('.collapseButton').off('vclick'); // remove existing listeners to avoid duplicates, or else function will run multiple times on a click
 	$('.collapseButton').on('vclick', function(){
 		console.log("Collapse button is working");
@@ -826,8 +829,8 @@ function allowCollapsableSublists() {
 	});
 }
 
+// renaming
 function changeName() {
-	console.log("lets try renaming");
 	if(checkboxBeingRenamed != undefined) {
 		checkboxBeingRenamed.next('label').text($('#renameField').val());
 		checkboxBeingRenamed.off('click mouseup');
@@ -861,6 +864,7 @@ function cancelRename() {
 	disableRename = false; // allow renaming again
 }
 
+// deleting items and labels
 function deleteDetected(item, pos) {
 	
 	disableRename = true; // disable taphold (renaming) for all items
@@ -905,8 +909,6 @@ function deleteDetected(item, pos) {
 
 function calculateProgress() {
 
-	console.log("calculate Progress");
-
 	currentProgress = 0;
 	progressDenominator = 0;
 
@@ -931,7 +933,7 @@ function calculateProgress() {
 		}
 	}
 
-	var progressPercentage = currentProgress/progressDenominator * 100;
+	progressPercentage = currentProgress/progressDenominator * 100;
 
 	$( '#progressbar' ).progressbar({
       value: progressPercentage
@@ -954,21 +956,45 @@ function removeButtonHighlights() {
 	$('.ui-btn-active').removeClass('ui-btn-active'); // jQuery Mobile doesn't unhighlight clicked buttons automatically
 }
 
+function saveTemplate( nameToSave ) {
+	if( nameToSave ) {
+		var savedListName = nameToSave;
+	} else {
+		var savedListName = $('#saveField').val().replace(/\s/g,"-"); // replace spaces with hyphens for valid id
+		savedListName = savedListName.replace(/\./g, '-'); // replace periods with hyphens
+	}
+	
+	bareListArray.push( { "name" : savedListName } ); // bareListArray.name or ["name"] = savedListName; won't be seen or stringified
+
+	// save the list into local storage
+	console.log(JSON.stringify(bareListArray));
+	var savedListString = JSON.stringify(bareListArray);
+	$.jStorage.set(savedListName, savedListString);
+	console.log("Saved list named: " + savedListName + " and the list looks like this:\n" + savedListString);
+	$.jStorage.set('untitled', null); // wipe untitled list
+
+	// save the templates into local storage
+	listOfChecklists[savedListName] = savedListString;
+	$.jStorage.set('listOfChecklists', listOfChecklists);
+
+	renderTemplates();
+
+	clearCurrentList();
+
+	setTimeout(function() {
+		$('#savedDialog').popup("open");
+	}, 300);
+}
+
 $(document).ready(function() {	
 	console.log('document ready in app.js');
 
 	allowSortable();
 
-	// $('#checklist').on('mouseleave', sayHi); // triggers every time a dragged item passes by another one
-	// for a 'finished-dragging' event, refer to mouseStop() in nestedSortable.js=
-
 	var addingItem = true;
 	var storing = true; // for testing only
 	var inputShown = false;
 
-	// prepend text field to footer
-	// $('#inputGrid').append(inputField);
-	// $('#inputGrid').append(inputButton);
 	// jquery mobile re-style
 	$('[type="text"]').textinput();
 	$('[type="button"]').button();
@@ -979,7 +1005,7 @@ $(document).ready(function() {
 	$('#newItem').on('vclick', function(){
 		if( readOnly == true ) {
 			removeButtonHighlights();
-			return; // no changes allowed in readOnly
+			return; // no changes allowed in read-only mode
 		}
 
 		cancelRename();
@@ -1001,7 +1027,7 @@ $(document).ready(function() {
 	$('#newLabel').on('vclick', function(){
 		if( readOnly == true ) {
 			removeButtonHighlights();
-			return; // no changes allowed in readOnly
+			return; // no changes allowed in read-only mode
 		}
 
 		cancelRename();
@@ -1043,8 +1069,7 @@ $(document).ready(function() {
 		resetButtons();
 	});
 
-	/* Share the list */
-	// as JSON URI
+	// sharing the list as a JSON URI via Android SocialSharing plugin to any textable application
 	$('#shareDialogLaunch').on('vclick', function(){
 
 		// append list of checklists to this popup window
@@ -1059,8 +1084,6 @@ $(document).ready(function() {
 			$('#sharableTemplate-' + templateListCounter).on('vclick', function(e){
 				templateToShare = $(this).text();
 				console.log("Sharing template called " + templateToShare);
-				//doAppendFile(); // automatically outputs to file directory in Android as fileIO.js line 59's test.txt
-				//-----
 				console.log("Stringified: " + listOfChecklists[templateToShare] );
 				stringifiedTemplate = listOfChecklists[templateToShare].replace(/[|]|\//, '');
 				console.log("Stringified and replaced: " + stringifiedTemplate);
@@ -1125,35 +1148,10 @@ $(document).ready(function() {
 	$('#resetConfirm').on('vclick', function(){ 
 		resetList();
 		resetButtons();
-	});
+	});	
 
-	$('#save').on('vclick', function(){
-
-		var savedListName = $('#saveField').val().replace(/\s/g,"-"); // replace spaces with hyphens for valid id
-		savedListName = savedListName.replace(/\./g, '-'); // replace periods with hyphens
-
-		bareListArray.push( { "name" : savedListName } ); // bareListArray.name or ["name"] = savedListName; won't be seen or stringified
-	
-		// save the list into local storage
-		console.log(JSON.stringify(bareListArray));
-		var savedListString = JSON.stringify(bareListArray);
-		$.jStorage.set(savedListName, savedListString);
-		console.log("Saved list named: " + savedListName + " and the list looks like this:\n" + savedListString);
-		$.jStorage.set('untitled', null); // wipe untitled list
-
-		// save the templates into local storage
-		listOfChecklists[savedListName] = savedListString;
-		$.jStorage.set('listOfChecklists', listOfChecklists);
-
-		renderTemplates();
-
-		clearCurrentList();
-
-		setTimeout(function() {
-			$('#savedDialog').popup("open");
-		}, 300);
-		
-		//$('#homeTitle').text(savedListName + ' (saved)');
+	$('#save').on('vclick', function() {
+		saveTemplate();
 	});
 
 	/* Template page template links */
@@ -1174,7 +1172,6 @@ $(document).ready(function() {
 			addingItem = false;	
 			storing = false;	
 		});
-		/**/
 	}
 
 	/* Load a list as a template */
@@ -1186,8 +1183,6 @@ $(document).ready(function() {
 		decodeURIandLoad($('#loadField').val());
 	});
 
-	/* Input field for new items or labels */
-
 	$("#inputField").focus(function() {
 	    $(this).data("hasfocus", true);
 	});
@@ -1197,10 +1192,13 @@ $(document).ready(function() {
 	});
 
 	$(document.body).keyup(function(ev) {
-	    // 13 is ENTER
-	    if (ev.which === 13 && $("#inputField").data("hasfocus")) {
-	        addItemOrLabel();
-	    }
+	    if (ev.which === 13) {
+	    	if($("#inputField").data("hasfocus"))
+	        	addItemOrLabel();
+	        
+	        if($('#saveField').data("hasfocus"))
+	        	saveTemplate();
+	    }	    	
 	});
 
 	function addItemOrLabel() {
@@ -1262,7 +1260,7 @@ $(document).ready(function() {
       value: 0
     });
 
-    $( '#progressPercent' ).text('Progress: 0%');
+    $('#progressPercent').text('Progress: 0%');
 
 	// initialize PhoneGap/Cordova code
 	app.initialize();
