@@ -19,7 +19,7 @@
 
 var templateLoadedFromURL = null;
 
-var app = {
+var index = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
