@@ -776,7 +776,7 @@ var app = {
 
 		/* Delete the whole list */
 		$('#clearDialogLaunch').on('vclick', function(){ 
-			cancelRename();
+			app.cancelRename();
 			$('#clearDialog').popup("open", { overlayTheme: "a" });
 		});
 
@@ -941,7 +941,7 @@ var app = {
 
 		$('#cancelRenameButton').on('vclick', function() {
 			removeButtonHighlights();
-			cancelRename();
+			app.cancelRename();
 		});	
 
 		$('.cancelBtn').on('vclick', function() {

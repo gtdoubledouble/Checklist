@@ -45,13 +45,13 @@
 		},
 
 		_mouseDrag: function(event) {
-			if( readOnly == true ) return; // no changes allowed in readOnly
+			if( app.readOnly == true ) return; // no changes allowed in readOnly
 
 			//Compute the helpers position
 			this.position = this._generatePosition(event);
 			this.positionAbs = this._convertPositionTo("absolute");
 
-			deleteDetected( this.currentItem[0], this.position.left );
+			app.deleteDetected( this.currentItem[0], this.position.left );
 
 			if (!this.lastPositionAbs) {
 				this.lastPositionAbs = this.positionAbs;
@@ -217,7 +217,7 @@
 		},
 
 		_mouseStop: function(event, noPropagation) {
-			if( readOnly == true ) return;
+			if( app.readOnly == true ) return;
 			
 			// If the item is in a position not allowed, send it back
 			if (this.beyondMaxLevels) {
@@ -242,7 +242,7 @@
 
 			$.ui.sortable.prototype._mouseStop.apply(this, arguments);
 
-			resave();
+			app.resave();
 
 		},
 
