@@ -919,349 +919,261 @@ function calculateProgress() {
 				for( var j=0; j<listItems[i].sublist.length; j++ ) {
 					if( listItems[i].sublist[j].selector.children('input[type=checkbox]').prop('checked') == true ) {
 						currentProgress++;
-					}					
+					}
+					progressDenominator++;
 				}
-				progressDenominator = progressDenominator + listItems[i].sublist.length;
-			}	
-			
-			if( listItems[i].sublist == null || listItems[i].sublist.length == 0 ) progressDenominator++;
+			} else {
+				progressDenominator++;
+			}
 		}
 	}
 
-	var progressPercentage = currentProgress/progressDenominator * 100;
-
-	$( '#progressbar' ).progressbar({
-      value: progressPercentage
-    });
-
-    progressPercentage = Math.round(progressPercentage);
-
-    $( '#progressPercent' ).text('Progress: ' + progressPercentage + '%');
-
-    if( progressPercentage >= 100 )
-    	$('#completedPopup').popup("open");
+	var progressPercent = Math.round((currentProgress/progressDenominator)*100);
+	$('#progressbar').val(progressPercent);
+	$('#progressbar').slider('refresh');
+	$('#progressPercent').text(progressPercent + "%");
 }
 
 function resetButtons() {
-	removeButtonHighlights();
-	$('#inputGrid').hide();
+	$('#editDialogLaunch').text("Edit Mode");
+	$('#editDialogLaunch').show();
+	$('#saveDialogLaunch').children('a').text('Save');
+	$('#saveDialogLaunch').attr('id','resetDialogLaunch');
+	$('#resetDialogLaunch').children('a').text('Reset');
 }
 
-function removeButtonHighlights() {
-	$('.ui-btn-active').removeClass('ui-btn-active'); // jQuery Mobile doesn't unhighlight clicked buttons automatically
+function saveChecklist() {
+	// save current checklist into a template
+	// if current checklist is already a template, overwrite it
+
+	// if current checklist is untitled, prompt user to enter a name
+	if( currentChecklist == "untitled" ) {
+		$("#saveAsTemplate").popup("open", { overlayTheme: "a" });
+	} else {
+		// overwrite existing template
+		listOfChecklists[currentChecklist] = JSON.stringify(bareListArray);
+		$.jStorage.set('listOfChecklists', listOfChecklists);
+		alert("Overwrote existing template: " + currentChecklist);
+	}
 }
 
-$(document).ready(function() {	
-	console.log('document ready in app.js');
+function saveAsTemplate() {
+	// save current checklist into a template
+	// if current checklist is already a template, overwrite it
 
-	allowSortable();
+	var templateName = $('#templateName').val();
+	if( !templateName ) return;
 
-	// $('#checklist').on('mouseleave', sayHi); // triggers every time a dragged item passes by another one
-	// for a 'finished-dragging' event, refer to mouseStop() in nestedSortable.js=
-
-	var addingItem = true;
-	var storing = true; // for testing only
-	var inputShown = false;
-
-	// prepend text field to footer
-	// $('#inputGrid').append(inputField);
-	// $('#inputGrid').append(inputButton);
-	// jquery mobile re-style
-	$('[type="text"]').textinput();
-	$('[type="button"]').button();
-
-	$('#inputGrid').hide();	
-	$('#renameGrid').hide();	
-
-	$('#newItem').on('vclick', function(){
-		if( readOnly == true ) {
-			removeButtonHighlights();
-			return; // no changes allowed in readOnly
-		}
-
-		cancelRename();
-
-		if( inputShown == false ) {
-			$('#inputGrid').show();
-			addingItem = true;
-			inputShown = true;			
-		}
-		else {
-			$('#inputGrid').hide();
-			inputShown = false;		
-			setTimeout(function(){
-				$('#newItem').children('a').removeClass('ui-btn-active');
-			},0);			
-		}		
-	});
-
-	$('#newLabel').on('vclick', function(){
-		if( readOnly == true ) {
-			removeButtonHighlights();
-			return; // no changes allowed in readOnly
-		}
-
-		cancelRename();
-
-		$('#inputGrid').show();
-		if( inputShown == false ) {
-			$('#inputGrid').show();
-			addingItem = false;
-			inputShown = true;
-		}
-		else {
-			$('#inputGrid').hide();
-			inputShown = false;
-			setTimeout(function(){
-				$('#newLabel').children('a').removeClass('ui-btn-active');
-			},0);	
-		}	
-	});
-
-	$('#templatesLink').on('vclick', function(){
-		cancelRename();
-		// load page manually instead of using the a href link, which uses the default slow click
-		$.mobile.changePage('#templates', {transition: 'slide'});
-	});
-
-	$('#homeLink').on('vclick', function(){
-		// load page manually instead of using the a href link, which uses the default slow click
-		$.mobile.changePage('#home', {transition: 'slide', reverse: true});
-	});
-
-	/* Delete the whole list */
-	$('#clearDialogLaunch').on('vclick', function(){ 
-		cancelRename();
-		$('#clearDialog').popup("open", { overlayTheme: "a" });
-	});
-
-	$('#clear').on('vclick', function(){ 
-		clearCurrentList();
-		resetButtons();
-	});
-
-	/* Share the list */
-	// as JSON URI
-	$('#shareDialogLaunch').on('vclick', function(){
-
-		// append list of checklists to this popup window
-		$('#listOfTemplates').empty();
-		$('#listOfTemplates').append($('#listOfChecklists').html());
-		$('#shareTemplateDialog').popup("open", { overlayTheme: "a" });
-
-		var templateListCounter = 1;
-		eachTemplate = $('#listOfTemplates').children('li').each( function() {
-			$(this).children('a').attr('id', 'sharableTemplate-' + templateListCounter);
-			
-			$('#sharableTemplate-' + templateListCounter).on('vclick', function(e){
-				templateToShare = $(this).text();
-				console.log("Sharing template called " + templateToShare);
-				//doAppendFile(); // automatically outputs to file directory in Android as fileIO.js line 59's test.txt
-				//-----
-				console.log("Stringified: " + listOfChecklists[templateToShare] );
-				stringifiedTemplate = listOfChecklists[templateToShare].replace(/[|]|\//, '');
-				console.log("Stringified and replaced: " + stringifiedTemplate);
-
-				var encodedURL = 'http://checklist/' + encodeURIComponent(stringifiedTemplate);
-				console.log("Send out this URL: " + encodedURL);
-				window.plugins.socialsharing.share(null, null, null, encodedURL);
-			});	
-
-			templateListCounter++;
-		});
-			
-	});	
-
-	$('#editDialogLaunch').on('vclick', function(){
-
-		var readOnlyTemp = readOnly; // because below methods will change readOnly's value,
-		// so we need to store what readOnly is before the methods and interpret that instead
-
-		// re-render
-		var currentBareListArray = bareListArray;
-		clearCurrentList();
-		loadChecklist(currentChecklist, JSON.stringify(currentBareListArray), false, false);
-
-		if( readOnlyTemp == false ) {
-			$('#homeTitle').text(currentChecklist + ' (use mode)');
-			$(this).text("Edit Mode");
-			readOnly = true;
-		}
-		else {
-			$('#homeTitle').text(currentChecklist + ' (edit mode)');
-			$(this).text("Use Mode");
-			editMode();
-		}
-	});
-
-	/* Save the list as a template */
-	$('#saveDialogLaunch').on('vclick', function(){ 
-
-		resetButtons();
-
-		if( readOnly == true ) {
-			$('#resetDialog').popup("open");
-			return;
-		}
-
-		cancelRename();
-		if( bareListArray.length == 0 ) {
-			$('#noSavingDialog').popup("open", { overlayTheme: "a" });
-			setTimeout(function(){ 
-				removeButtonHighlights(); // since this line is called before button becomes highlighted, need to delay the removal
-			}, 300);
-		} else {
-			$('#saveDialog').popup("open", { overlayTheme: "a" });
-		}
-	});
-
-	$('#resetDialogLaunch').on('vclick', function(){ 
-		$('#resetDialog').popup("open", { overlayTheme: "a" });
-	});
-
-	$('#resetConfirm').on('vclick', function(){ 
-		resetList();
-		resetButtons();
-	});
-
-	$('#save').on('vclick', function(){
-
-		var savedListName = $('#saveField').val().replace(/\s/g,"-"); // replace spaces with hyphens for valid id
-		savedListName = savedListName.replace(/\./g, '-'); // replace periods with hyphens
-
-		bareListArray.push( { "name" : savedListName } ); // bareListArray.name or ["name"] = savedListName; won't be seen or stringified
-	
-		// save the list into local storage
-		console.log(JSON.stringify(bareListArray));
-		var savedListString = JSON.stringify(bareListArray);
-		$.jStorage.set(savedListName, savedListString);
-		console.log("Saved list named: " + savedListName + " and the list looks like this:\n" + savedListString);
-		$.jStorage.set('untitled', null); // wipe untitled list
-
-		// save the templates into local storage
-		listOfChecklists[savedListName] = savedListString;
+	// if current checklist is untitled, prompt user to enter a name
+	if( currentChecklist == "untitled" ) {
+		// save as new template
+		listOfChecklists[templateName] = JSON.stringify(bareListArray);
 		$.jStorage.set('listOfChecklists', listOfChecklists);
-
-		renderTemplates();
-
-		clearCurrentList();
-
-		setTimeout(function() {
-			$('#savedDialog').popup("open");
-		}, 300);
-		
-		//$('#homeTitle').text(savedListName + ' (saved)');
-	});
-
-	/* Template page template links */
-	$('#confirmLoadTemplate').on('vclick', function(){
-		loadChecklist(null, templateToLoad, true, false);
-	});
-
-	if( jStorageTesting == true ) {
-		/* Testing only */
-		$('#testStore').on('vclick', function(){
-			$('#inputGrid').show();
-			addingItem = false;	
-			storing = true;	
-		});
-
-		$('#testRetrieve').on('vclick', function(){
-			$('#inputGrid').show();
-			addingItem = false;	
-			storing = false;	
-		});
-		/**/
-	}
-
-	/* Load a list as a template */
-	$('#loadDialogLaunch').on('vclick', function(){ 
-		$('#loadDialog').popup("open", { overlayTheme: "a" });
-	});
-
-	$('#load').on('vclick', function(){
-		decodeURIandLoad($('#loadField').val());
-	});
-
-	/* Input field for new items or labels */
-
-	$("#inputField").focus(function() {
-	    $(this).data("hasfocus", true);
-	});
-
-	$("#inputField").blur(function() {
-	    $(this).data("hasfocus", false);
-	});
-
-	$(document.body).keyup(function(ev) {
-	    // 13 is ENTER
-	    if (ev.which === 13 && $("#inputField").data("hasfocus")) {
-	        addItemOrLabel();
-	    }
-	});
-
-	function addItemOrLabel() {
-		if( addingItem == true ) {
-			createNewItem();
-		}
-		else {
-			createNewLabel();
-		}
-		$('#inputField').val('');
-		setTimeout(function() {
-			$('#inputField').focus();
-		}, 200);
-	}
-
-	$('#inputButton').on('vclick', function() {
-		addItemOrLabel();
-	});	
-
-	$('#renameButton').on('vclick', function() {
-		removeButtonHighlights();
-		changeName();
-	});	
-
-	$('#cancelRenameButton').on('vclick', function() {
-		removeButtonHighlights();
-		cancelRename();
-	});	
-
-	$('.cancelBtn').on('vclick', function() {
-		removeButtonHighlights();
-	});	
-
-	$('#confirmDeleteTemplateBtn').on('vclick', function() {
-		console.log("delete this template");
-		$('#'+templateToDelete).remove();
-		for( var key in listOfChecklists ) {
-			if( key == templateToDelete ) {
-				delete listOfChecklists[key];
-			}
-		}
-
+		alert("Saved as new template: " + templateName);
+	} else {
+		// overwrite existing template
+		listOfChecklists[templateName] = JSON.stringify(bareListArray);
 		$.jStorage.set('listOfChecklists', listOfChecklists);
+		alert("Overwrote existing template: " + templateName);
+	}
+}
 
-		$( "#confirmDeleteTemplate" ).popup( "close" )
-	});	
-
-	var existingChecklist = $.jStorage.get('untitled');
-	loadChecklist(null, existingChecklist, false, true); // name of template is [null] (untitled), template, transitionToHome, refresh
-	editMode();
-
-	// load the template page
-	listOfChecklists = $.jStorage.get('listOfChecklists') || {}; // if variable didn't exist in local storage, use empty object instead
+function deleteTemplate() {
+	delete listOfChecklists[templateToDelete];
+	$.jStorage.set('listOfChecklists', listOfChecklists);
+	alert("Deleted template: " + templateToDelete);
 	renderTemplates();
+}
 
-	$('#editDialogLaunch').hide();
+function deleteCurrentList() {
+	// delete current checklist
+	// if current checklist is a template, do not delete the template
 
-	$( '#progressbar' ).progressbar({
-      value: 0
-    });
+	clearCurrentList();
+	$.jStorage.set('untitled', null);
+	alert("Deleted current checklist");
+}
 
-    $( '#progressPercent' ).text('Progress: 0%');
+function resetCurrentList() {
+	// reset current checklist
+	// if current checklist is a template, load the template
 
-	// initialize PhoneGap/Cordova code
+	if( currentChecklist == "untitled" ) {
+		clearCurrentList();
+	} else {
+		loadChecklist(currentChecklist, listOfChecklists[currentChecklist], false, false);
+	}
+	alert("Reset current checklist");
+}
 
-	app.initialize();
-});
+function shareChecklist() {
+	// share current checklist
+	// if current checklist is a template, share the template
+
+	var checklistToShare = JSON.stringify(bareListArray);
+	var encodedChecklist = encodeURIComponent(checklistToShare);
+	var checklistLink = "http://checklist/" + encodedChecklist;
+
+	$("#checklistLink").text(checklistLink);
+	$("#shareChecklist").popup("open", { overlayTheme: "a" });
+}
+
+function loadChecklists() {
+	// load all checklists from jStorage
+
+	listOfChecklists = $.jStorage.get('listOfChecklists');
+	if( listOfChecklists == null ) {
+		listOfChecklists = {};
+		$.jStorage.set('listOfChecklists', listOfChecklists);
+	}
+
+	var untitledChecklist = $.jStorage.get('untitled');
+	if( untitledChecklist == null ) {
+		$.jStorage.set('untitled', null);
+	}
+}
+
+function loadChecklistFromLink() {
+	// load a checklist from a link
+
+	var checklistLink = $('#checklistLinkToLoad').val();
+	if( !checklistLink ) return;
+
+	decodeURIandLoad(checklistLink);
+}
+
+function loadChecklistFromTemplate() {
+	// load a checklist from a template
+
+	var templateName = $('#templateNameToLoad').val();
+	if( !templateName ) return;
+
+	loadChecklist(templateName, listOfChecklists[templateName], false, false);
+}
+
+function loadChecklistFromUntitled() {
+	// load the untitled checklist
+
+	var untitledChecklist = $.jStorage.get('untitled');
+	if( untitledChecklist == null ) return;
+
+	loadChecklist('untitled', untitledChecklist, false, false);
+}
+
+function saveChecklistAsUntitled() {
+	// save the current checklist as the untitled checklist
+
+	$.jStorage.set('untitled', JSON.stringify(bareListArray));
+	alert("Saved current checklist as untitled checklist");
+}
+
+function saveChecklistAsTemplate() {
+	// save the current checklist as a template
+
+	var templateName = $('#templateNameToSave').val();
+	if( !templateName ) return;
+
+	listOfChecklists[templateName] = JSON.stringify(bareListArray);
+	$.jStorage.set('listOfChecklists', listOfChecklists);
+	alert("Saved current checklist as template: " + templateName);
+}
+
+function deleteUntitledChecklist() {
+	// delete the untitled checklist
+
+	$.jStorage.set('untitled', null);
+	alert("Deleted untitled checklist");
+}
+
+function deleteTemplate() {
+	// delete a template
+
+	var templateName = $('#templateNameToDelete').val();
+	if( !templateName ) return;
+
+	delete listOfChecklists[templateName];
+	$.jStorage.set('listOfChecklists', listOfChecklists);
+	alert("Deleted template: " + templateName);
+}
+
+function deleteAllChecklists() {
+	// delete all checklists
+
+	$.jStorage.flush();
+	alert("Deleted all checklists");
+}
+
+function loadAllChecklists() {
+	// load all checklists
+
+	loadChecklists();
+	renderTemplates();
+}
+
+function loadChecklistFromTemplate() {
+	// load a checklist from a template
+
+	var templateName = $('#templateNameToLoad').val();
+	if( !templateName ) return;
+
+	loadChecklist(templateName, listOfChecklists[templateName], false, false);
+}
+
+function loadChecklistFromUntitled() {
+	// load the untitled checklist
+
+	var untitledChecklist = $.jStorage.get('untitled');
+	if( untitledChecklist == null ) return;
+
+	loadChecklist('untitled', untitledChecklist, false, false);
+}
+
+function saveChecklistAsUntitled() {
+	// save the current checklist as the untitled checklist
+
+	$.jStorage.set('untitled', JSON.stringify(bareListArray));
+	alert("Saved current checklist as untitled checklist");
+}
+
+function saveChecklistAsTemplate() {
+	// save the current checklist as a template
+
+	var templateName = $('#templateNameToSave').val();
+	if( !templateName ) return;
+
+	listOfChecklists[templateName] = JSON.stringify(bareListArray);
+	$.jStorage.set('listOfChecklists', listOfChecklists);
+	alert("Saved current checklist as template: " + templateName);
+}
+
+function deleteUntitledChecklist() {
+	// delete the untitled checklist
+
+	$.jStorage.set('untitled', null);
+	alert("Deleted untitled checklist");
+}
+
+function deleteTemplate() {
+	// delete a template
+
+	var templateName = $('#templateNameToDelete').val();
+	if( !templateName ) return;
+
+	delete listOfChecklists[templateName];
+	$.jStorage.set('listOfChecklists', listOfChecklists);
+	alert("Deleted template: " + templateName);
+}
+
+function deleteAllChecklists() {
+	// delete all checklists
+
+	$.jStorage.flush();
+	alert("Deleted all checklists");
+}
+
+function loadAllChecklists() {
+	// load all checklists
+
+	loadChecklists();
+	renderTemplates();
+}
